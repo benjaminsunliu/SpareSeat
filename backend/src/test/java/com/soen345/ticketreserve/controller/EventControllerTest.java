@@ -46,6 +46,7 @@ class EventControllerTest {
         eventOne.setEventDate(LocalDate.of(2026, 4, 10));
         eventOne.setLocation("Montreal");
         eventOne.setEventCapacity(120);
+        eventOne.setCategory("Tech");
 
         Event eventTwo = new Event();
         eventTwo.setEventId(2L);
@@ -54,6 +55,7 @@ class EventControllerTest {
         eventTwo.setEventDate(LocalDate.of(2026, 8, 21));
         eventTwo.setLocation("Toronto");
         eventTwo.setEventCapacity(350);
+        eventTwo.setCategory("Music");
 
         when(eventService.getAllEvents()).thenReturn(List.of(eventOne, eventTwo));
 
@@ -62,9 +64,11 @@ class EventControllerTest {
                 .andExpect(jsonPath("$[0].eventId").value(1))
                 .andExpect(jsonPath("$[0].title").value("Spring Meetup"))
                 .andExpect(jsonPath("$[0].date").value("2026-04-10"))
+                .andExpect(jsonPath("$[0].category").value("Tech"))
                 .andExpect(jsonPath("$[1].eventId").value(2))
                 .andExpect(jsonPath("$[1].title").value("Summer Concert"))
-                .andExpect(jsonPath("$[1].date").value("2026-08-21"));
+                .andExpect(jsonPath("$[1].date").value("2026-08-21"))
+                .andExpect(jsonPath("$[1].category").value("Music"));
     }
 
     @Test
@@ -88,11 +92,12 @@ class EventControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                 {
-                                                                        "organizerId": 1,
+                  "organizerId": 1,
                   "title": "Spring Meetup",
                   "description": "Community event",
                   "date": "2026-04-10",
                   "location": "Montreal",
+                  "category": "General",
                   "eventCapacity": 120
                 }
                 """))
@@ -102,6 +107,7 @@ class EventControllerTest {
                 .andExpect(jsonPath("$.description").value("Community event"))
                 .andExpect(jsonPath("$.date").value("2026-04-10"))
                 .andExpect(jsonPath("$.location").value("Montreal"))
+                .andExpect(jsonPath("$.category").value("General"))
                 .andExpect(jsonPath("$.eventCapacity").value(120));
     }
 

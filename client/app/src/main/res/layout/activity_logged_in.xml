@@ -1,39 +1,302 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
-    android:paddingHorizontal="24dp">
+    android:orientation="vertical"
+    android:background="#FFFFFF">
 
+    <!-- ── TOP BAR ── -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="14dp"
+        android:gravity="center_vertical">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvGreeting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hi, there!"
+                android:textColor="#111111"
+                android:textSize="26sp"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnLogout"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="Log Out"
+            android:textColor="#111111"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:backgroundTint="#89F336"
+            android:stateListAnimator="@null"
+            android:paddingHorizontal="18dp"
+            app:cornerRadius="20dp"/>
+    </LinearLayout>
+
+    <!-- ── DIVIDER ── -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#F0F0F0"/>
+
+    <!-- ── SEARCH ── -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilSearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="16dp"
+        app:boxBackgroundColor="#F5F5F5"
+        app:boxBackgroundMode="filled"
+        app:boxStrokeWidth="0dp"
+        app:boxStrokeWidthFocused="0dp"
+        app:boxCornerRadiusTopStart="12dp"
+        app:boxCornerRadiusTopEnd="12dp"
+        app:boxCornerRadiusBottomStart="12dp"
+        app:boxCornerRadiusBottomEnd="12dp"
+        app:hintEnabled="false">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etSearch"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="Search events by title, location..."
+            android:inputType="text"
+            android:textSize="14sp"
+            android:paddingHorizontal="16dp"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- ── FILTERS LABEL ── -->
     <TextView
-        android:id="@+id/tvWelcome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Logged In"
-        android:textColor="#111111"
-        android:textSize="28sp"
+        android:text="Filter events"
+        android:textColor="#333333"
+        android:textSize="12sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        android:letterSpacing="0.08"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginBottom="6dp"/>
 
-    <Button
-        android:id="@+id/btnLogout"
-        android:layout_width="0dp"
-        android:layout_height="52dp"
-        android:text="Log Out"
-        android:textColor="#111111"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:backgroundTint="#89F336"
-        android:stateListAnimator="@null"
-        android:layout_marginBottom="40dp"
-        app:cornerRadius="12dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+    <!-- ── FILTER DROPDOWNS ── -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="20dp"
+        android:gravity="top">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Location -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginEnd="5dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Location"
+                android:textColor="#555555"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilLocation"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:boxBackgroundColor="#F5F5F5"
+                app:boxStrokeWidth="0dp"
+                app:boxStrokeWidthFocused="0dp"
+                app:boxCornerRadiusTopStart="10dp"
+                app:boxCornerRadiusTopEnd="10dp"
+                app:boxCornerRadiusBottomStart="10dp"
+                app:boxCornerRadiusBottomEnd="10dp"
+                app:hintEnabled="false">
+
+                <AutoCompleteTextView
+                    android:id="@+id/actvLocation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="All"
+                    android:inputType="none"
+                    android:textSize="12sp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="36dp"
+                    android:paddingVertical="12dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:singleLine="true"/>
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <!-- Category -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginHorizontal="2dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Category"
+                android:textColor="#555555"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilCategory"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:boxBackgroundColor="#F5F5F5"
+                app:boxStrokeWidth="0dp"
+                app:boxStrokeWidthFocused="0dp"
+                app:boxCornerRadiusTopStart="10dp"
+                app:boxCornerRadiusTopEnd="10dp"
+                app:boxCornerRadiusBottomStart="10dp"
+                app:boxCornerRadiusBottomEnd="10dp"
+                app:hintEnabled="false">
+
+                <AutoCompleteTextView
+                    android:id="@+id/actvCategory"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="All"
+                    android:inputType="none"
+                    android:textSize="12sp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="36dp"
+                    android:paddingVertical="12dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:singleLine="true"/>
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <!-- Date -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginStart="5dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Date"
+                android:textColor="#555555"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilDate"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:boxBackgroundColor="#F5F5F5"
+                app:boxStrokeWidth="0dp"
+                app:boxStrokeWidthFocused="0dp"
+                app:boxCornerRadiusTopStart="10dp"
+                app:boxCornerRadiusTopEnd="10dp"
+                app:boxCornerRadiusBottomStart="10dp"
+                app:boxCornerRadiusBottomEnd="10dp"
+                app:hintEnabled="false">
+
+                <AutoCompleteTextView
+                    android:id="@+id/actvDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="All"
+                    android:inputType="none"
+                    android:textSize="12sp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="36dp"
+                    android:paddingVertical="12dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:singleLine="true"/>
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- ── EVENT COUNT ── -->
+    <TextView
+        android:id="@+id/tvEventCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Loading events..."
+        android:textColor="#AAAAAA"
+        android:textSize="12sp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginBottom="2dp"/>
+
+    <!-- ── EVENTS LIST (fills rest of screen) ── -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvEvents"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingHorizontal="20dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="24dp"
+            android:clipToPadding="false"
+            android:visibility="gone"/>
+
+        <!-- Empty / error state -->
+        <LinearLayout
+            android:id="@+id/llEmpty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/tvEmpty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No events found"
+                android:textColor="#AAAAAA"
+                android:textSize="16sp"/>
+        </LinearLayout>
+
+        <!-- Loading indicator -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminateTint="#89F336"/>
+    </FrameLayout>
+
+</LinearLayout>

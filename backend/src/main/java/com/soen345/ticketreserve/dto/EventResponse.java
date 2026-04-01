@@ -9,16 +9,18 @@ public class EventResponse {
     private LocalDate date;
     private String location;
     private int eventCapacity;
+    private String category;
 
     public EventResponse() {}
 
-    public EventResponse(Long eventId, String title, String description, LocalDate date, String location, int eventCapacity) {
+    public EventResponse(Long eventId, String title, String description, LocalDate date, String location, int eventCapacity, String category) {
         this.eventId = eventId;
         this.title = title;
         this.description = description;
         this.date = date;
         this.location = location;
         this.eventCapacity = eventCapacity;
+        this.category = category;
     }
 
     public Long getEventId() {
@@ -67,5 +69,13 @@ public class EventResponse {
 
     public void setEventCapacity(int eventCapacity) {
         this.eventCapacity = eventCapacity;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 }

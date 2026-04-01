@@ -206,17 +206,9 @@ public class SignUpActivity extends AppCompatActivity {
             }
         }
 
-        if (TextUtils.isEmpty(password)) {
-            tilPassword.setError("Password is required");
-            valid = false;
-        } else if (password.length() < 8) {
-            tilPassword.setError("Password must be at least 8 characters");
-            valid = false;
-        } else if (!password.matches(".*[A-Z].*")) {
-            tilPassword.setError("Password must contain at least one uppercase letter");
-            valid = false;
-        } else if (!password.matches(".*[0-9].*")) {
-            tilPassword.setError("Password must contain at least one number");
+        String passwordError = getPasswordError(password);
+        if (passwordError != null) {
+            tilPassword.setError(passwordError);
             valid = false;
         }
 
@@ -226,6 +218,14 @@ public class SignUpActivity extends AppCompatActivity {
         }
 
         return valid;
+    }
+
+    static String getPasswordError(String password) {
+        if (password == null || password.isEmpty()) return "Password is required";
+        if (password.length() < 8) return "Password must be at least 8 characters";
+        if (!password.matches(".*[A-Z].*")) return "Password must contain at least one uppercase letter";
+        if (!password.matches(".*[0-9].*")) return "Password must contain at least one number";
+        return null;
     }
 
     private void showError(String message) {

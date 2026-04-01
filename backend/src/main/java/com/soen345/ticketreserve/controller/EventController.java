@@ -64,7 +64,8 @@ public class EventController {
                 event.getDescription(),
                 event.getEventDate(),
                 event.getLocation(),
-                event.getEventCapacity()
+                event.getEventCapacity(),
+                event.getCategory()
         );
     }
 }
