@@ -166,8 +166,11 @@ public class SignUpActivity extends AppCompatActivity {
                 btnCreateAccount.setEnabled(true);
                 btnCreateAccount.setText("Create Account");
                 if (response.isSuccessful()) {
-                    SessionManager.save(SignUpActivity.this, response.body());
-                    startActivity(new Intent(SignUpActivity.this, LoggedInActivity.class));
+                    UserResponse user = response.body();
+                    SessionManager.save(SignUpActivity.this, user);
+                    Class<?> dest = "HOST".equals(user != null ? user.getRole() : "")
+                            ? HostDashboardActivity.class : LoggedInActivity.class;
+                    startActivity(new Intent(SignUpActivity.this, dest));
                     finish();
                 } else {
                     showError(parseErrorBody(response, "Registration failed. Please try again."));

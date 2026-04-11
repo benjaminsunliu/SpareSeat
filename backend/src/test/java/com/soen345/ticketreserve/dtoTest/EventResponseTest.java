@@ -33,11 +33,12 @@ public class EventResponseTest {
     @Test
     void testAllArgsConstructor() {
         EventResponse r = new EventResponse(
-                5L, "Concert", "Live music",
+                5L, 10L, "Concert", "Live music",
                 LocalDate.of(2026, 6, 15),
                 "Toronto", 200, "Music");
 
         assertEquals(5L, r.getEventId());
+        assertEquals(10L, r.getOrganizerId());
         assertEquals("Concert", r.getTitle());
         assertEquals("Live music", r.getDescription());
         assertEquals(LocalDate.of(2026, 6, 15), r.getDate());
@@ -61,5 +62,20 @@ public class EventResponseTest {
         assertEquals("Sports", r.getCategory());
         r.setCategory("Music");
         assertEquals("Music", r.getCategory());
+    }
+
+    @Test
+    void testOrganizerIdSetterAndGetter() {
+        EventResponse r = new EventResponse();
+        assertNull(r.getOrganizerId());
+        r.setOrganizerId(42L);
+        assertEquals(42L, r.getOrganizerId());
+    }
+
+    @Test
+    void testOrganizerIdCanBeNull() {
+        EventResponse r = new EventResponse(1L, null, "Title", "Desc",
+                LocalDate.of(2026, 1, 1), "Montreal", 50, "General");
+        assertNull(r.getOrganizerId());
     }
 }

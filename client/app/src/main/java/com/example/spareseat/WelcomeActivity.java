@@ -12,7 +12,9 @@ public class WelcomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         if (SessionManager.isLoggedIn(this)) {
-            startActivity(new Intent(this, LoggedInActivity.class));
+            Class<?> dest = "HOST".equals(SessionManager.getUserRole(this))
+                    ? HostDashboardActivity.class : LoggedInActivity.class;
+            startActivity(new Intent(this, dest));
             finish();
             return;
         }

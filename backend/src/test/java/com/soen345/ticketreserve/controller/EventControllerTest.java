@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -152,5 +153,102 @@ class EventControllerTest {
         mockMvc.perform(delete("/api/events/delete/999"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("Event not found with id: 999"));
+    }
+
+    @Test
+    void shouldReturnEventsByOrganizer() throws Exception {
+        User organizer = new User();
+        organizer.setId(7L);
+
+        Event e1 = new Event();
+        e1.setEventId(1L);
+        e1.setTitle("Host Gala");
+        e1.setDescription("Gala night");
+        e1.setEventDate(LocalDate.of(2026, 5, 20));
+        e1.setLocation("Montreal");
+        e1.setEventCapacity(100);
+        e1.setCategory("Social");
+        e1.setOrganizer(organizer);
+
+        Event e2 = new Event();
+        e2.setEventId(2L);
+        e2.setTitle("Host Workshop");
+        e2.setDescription("Workshop event");
+        e2.setEventDate(LocalDate.of(2026, 6, 10));
+        e2.setLocation("Quebec");
+        e2.setEventCapacity(30);
+        e2.setCategory("Tech");
+        e2.setOrganizer(organizer);
+
+        when(eventService.getEventsByOrganizerId(7L)).thenReturn(List.of(e1, e2));
+
+        mockMvc.perform(get("/api/events/organizer/7"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].eventId").value(1))
+                .andExpect(jsonPath("$[0].title").value("Host Gala"))
+                .andExpect(jsonPath("$[0].organizerId").value(7))
+                .andExpect(jsonPath("$[1].eventId").value(2))
+                .andExpect(jsonPath("$[1].title").value("Host Workshop"))
+                .andExpect(jsonPath("$[1].organizerId").value(7));
+    }
+
+    @Test
+    void shouldReturnEmptyListForOrganizerWithNoEvents() throws Exception {
+        when(eventService.getEventsByOrganizerId(99L)).thenReturn(List.of());
+
+        mockMvc.perform(get("/api/events/organizer/99"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isEmpty());
+    }
+
+    @Test
+    void shouldUpdateEvent() throws Exception {
+        Event updated = new Event();
+        updated.setEventId(3L);
+        updated.setTitle("Updated Meetup");
+        updated.setDescription("Updated desc");
+        updated.setEventDate(LocalDate.of(2026, 7, 15));
+        updated.setLocation("Ottawa");
+        updated.setCategory("General");
+        updated.setEventCapacity(80);
+
+        when(eventService.updateEvent(any(Long.class), any(Event.class))).thenReturn(updated);
+
+        mockMvc.perform(put("/api/events/update/3")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                {
+                  "title": "Updated Meetup",
+                  "description": "Updated desc",
+                  "date": "2026-07-15",
+                  "location": "Ottawa",
+                  "category": "General",
+                  "eventCapacity": 80
+                }
+                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.eventId").value(3))
+                .andExpect(jsonPath("$.title").value("Updated Meetup"))
+                .andExpect(jsonPath("$.location").value("Ottawa"))
+                .andExpect(jsonPath("$.eventCapacity").value(80));
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenUpdateFails() throws Exception {
+        when(eventService.updateEvent(any(Long.class), any(Event.class)))
+                .thenThrow(new BadRequestException("Event not found with id: 5"));
+
+        mockMvc.perform(put("/api/events/update/5")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                {
+                  "title": "Whatever",
+                  "date": "2026-07-15",
+                  "location": "Montreal",
+                  "eventCapacity": 50
+                }
+                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Event not found with id: 5"));
     }
 }

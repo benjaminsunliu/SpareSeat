@@ -34,6 +34,15 @@ public class EventController {
         return ResponseEntity.ok(responses);
     }
 
+    @GetMapping("/organizer/{organizerId}")
+    public ResponseEntity<List<EventResponse>> getEventsByOrganizer(@PathVariable Long organizerId) {
+        List<EventResponse> responses = eventService.getEventsByOrganizerId(organizerId)
+                .stream()
+                .map(this::toResponse)
+                .toList();
+        return ResponseEntity.ok(responses);
+    }
+
     @PostMapping("/create")
     public ResponseEntity<EventResponse> createEvent(@RequestBody EventCreationRequest request) {
         User organizer = userService.getUserById(request.getOrganizerId());
@@ -51,6 +60,20 @@ public class EventController {
         return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(createdEvent));
     }
 
+    @PutMapping("/update/{id}")
+    public ResponseEntity<EventResponse> updateEvent(@PathVariable Long id, @RequestBody EventCreationRequest request) {
+        Event updates = new Event();
+        updates.setTitle(request.getTitle());
+        updates.setDescription(request.getDescription());
+        updates.setEventDate(request.getDate());
+        updates.setLocation(request.getLocation());
+        updates.setCategory(request.getCategory());
+        updates.setEventCapacity(request.getEventCapacity());
+
+        Event updatedEvent = eventService.updateEvent(id, updates);
+        return ResponseEntity.ok(toResponse(updatedEvent));
+    }
+
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
         eventService.deleteEvent(id);
@@ -60,6 +83,7 @@ public class EventController {
     private EventResponse toResponse(Event event) {
         return new EventResponse(
                 event.getEventId(),
+                event.getOrganizer() != null ? event.getOrganizer().getId() : null,
                 event.getTitle(),
                 event.getDescription(),
                 event.getEventDate(),

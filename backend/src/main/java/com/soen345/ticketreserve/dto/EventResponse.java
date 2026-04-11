@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 public class EventResponse {
     private Long eventId;
+    private Long organizerId;
     private String title;
     private String description;
     private LocalDate date;
@@ -13,8 +14,9 @@ public class EventResponse {
 
     public EventResponse() {}
 
-    public EventResponse(Long eventId, String title, String description, LocalDate date, String location, int eventCapacity, String category) {
+    public EventResponse(Long eventId, Long organizerId, String title, String description, LocalDate date, String location, int eventCapacity, String category) {
         this.eventId = eventId;
+        this.organizerId = organizerId;
         this.title = title;
         this.description = description;
         this.date = date;
@@ -25,6 +27,14 @@ public class EventResponse {
 
     public Long getEventId() {
         return eventId;
+    }
+
+    public Long getOrganizerId() {
+        return organizerId;
+    }
+
+    public void setOrganizerId(Long organizerId) {
+        this.organizerId = organizerId;
     }
 
     public String getTitle() {

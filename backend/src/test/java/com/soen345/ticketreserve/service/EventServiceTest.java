@@ -12,6 +12,8 @@ import org.mockito.MockitoAnnotations;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -147,6 +149,125 @@ class EventServiceTest {
         event.setEventCapacity(-10);
 
         assertThrows(BadRequestException.class, () -> eventService.createEvent(event));
+    }
+
+    @Test
+    void shouldReturnEventsByOrganizerId() {
+        Event e1 = validEvent();
+        e1.setEventId(1L);
+        Event e2 = validEvent();
+        e2.setEventId(2L);
+
+        when(eventRepository.findByOrganizer_Id(1L)).thenReturn(List.of(e1, e2));
+
+        List<Event> result = eventService.getEventsByOrganizerId(1L);
+
+        assertEquals(2, result.size());
+        verify(eventRepository).findByOrganizer_Id(1L);
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenOrganizerHasNoEvents() {
+        when(eventRepository.findByOrganizer_Id(99L)).thenReturn(List.of());
+
+        List<Event> result = eventService.getEventsByOrganizerId(99L);
+
+        assertEquals(0, result.size());
+        verify(eventRepository).findByOrganizer_Id(99L);
+    }
+
+    @Test
+    void shouldUpdateEventWhenValid() {
+        Event existing = validEvent();
+        existing.setEventId(10L);
+
+        Event updates = new Event();
+        updates.setTitle("Updated Title");
+        updates.setDescription("Updated desc");
+        updates.setEventDate(LocalDate.of(2026, 9, 1));
+        updates.setLocation("Toronto");
+        updates.setCategory("Tech");
+        updates.setEventCapacity(200);
+
+        when(eventRepository.findById(10L)).thenReturn(Optional.of(existing));
+        when(eventRepository.save(any(Event.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        Event result = eventService.updateEvent(10L, updates);
+
+        assertEquals("Updated Title", result.getTitle());
+        assertEquals("Toronto", result.getLocation());
+        assertEquals(200, result.getEventCapacity());
+        verify(eventRepository).save(existing);
+    }
+
+    @Test
+    void shouldThrowErrorWhenUpdateTitleMissing() {
+        Event existing = validEvent();
+        existing.setEventId(10L);
+        when(eventRepository.findById(10L)).thenReturn(Optional.of(existing));
+
+        Event updates = validEvent();
+        updates.setTitle("");
+
+        assertThrows(BadRequestException.class, () -> eventService.updateEvent(10L, updates));
+    }
+
+    @Test
+    void shouldThrowErrorWhenUpdateDateMissing() {
+        Event existing = validEvent();
+        existing.setEventId(10L);
+        when(eventRepository.findById(10L)).thenReturn(Optional.of(existing));
+
+        Event updates = validEvent();
+        updates.setEventDate(null);
+
+        assertThrows(BadRequestException.class, () -> eventService.updateEvent(10L, updates));
+    }
+
+    @Test
+    void shouldThrowErrorWhenUpdateLocationMissing() {
+        Event existing = validEvent();
+        existing.setEventId(10L);
+        when(eventRepository.findById(10L)).thenReturn(Optional.of(existing));
+
+        Event updates = validEvent();
+        updates.setLocation("  ");
+
+        assertThrows(BadRequestException.class, () -> eventService.updateEvent(10L, updates));
+    }
+
+    @Test
+    void shouldThrowErrorWhenUpdateCapacityIsZero() {
+        Event existing = validEvent();
+        existing.setEventId(10L);
+        when(eventRepository.findById(10L)).thenReturn(Optional.of(existing));
+
+        Event updates = validEvent();
+        updates.setEventCapacity(0);
+
+        assertThrows(BadRequestException.class, () -> eventService.updateEvent(10L, updates));
+    }
+
+    @Test
+    void shouldThrowErrorWhenUpdatingNonexistentEvent() {
+        when(eventRepository.findById(404L)).thenReturn(Optional.empty());
+
+        assertThrows(BadRequestException.class, () -> eventService.updateEvent(404L, validEvent()));
+    }
+
+    @Test
+    void shouldDefaultCategoryToGeneralOnUpdate() {
+        Event existing = validEvent();
+        existing.setEventId(10L);
+        when(eventRepository.findById(10L)).thenReturn(Optional.of(existing));
+        when(eventRepository.save(any(Event.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        Event updates = validEvent();
+        updates.setCategory(null);
+
+        Event result = eventService.updateEvent(10L, updates);
+
+        assertEquals("General", result.getCategory());
     }
 
     private Event validEvent() {

@@ -47,6 +47,14 @@ public class SessionManager {
         return prefs(context).getString(KEY_USER_NAME, "");
     }
 
+    public static long getUserId(Context context) {
+        return prefs(context).getLong(KEY_USER_ID, -1L);
+    }
+
+    public static String getUserRole(Context context) {
+        return prefs(context).getString(KEY_USER_ROLE, "");
+    }
+
     private static SharedPreferences prefs(Context context) {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     }

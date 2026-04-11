@@ -145,8 +145,11 @@ public class SignInActivity extends AppCompatActivity {
                 btnSignIn.setEnabled(true);
                 btnSignIn.setText("Sign In");
                 if (response.isSuccessful()) {
-                    SessionManager.save(SignInActivity.this, response.body());
-                    startActivity(new Intent(SignInActivity.this, LoggedInActivity.class));
+                    UserResponse user = response.body();
+                    SessionManager.save(SignInActivity.this, user);
+                    Class<?> dest = "HOST".equals(user != null ? user.getRole() : "")
+                            ? HostDashboardActivity.class : LoggedInActivity.class;
+                    startActivity(new Intent(SignInActivity.this, dest));
                     finish();
                 } else {
                     showError(parseErrorBody(response, "Incorrect email or password. Please try again."));
