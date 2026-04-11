@@ -2,18 +2,25 @@ package com.soen345.ticketreserve.model;
 
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class UserTest {
     @Test
-    void getEventsAttendingTest(){
+    void shouldCreateUserAndUseGettersSetters(){
         User user = new User();
-        Event event1 = new Event();
-        Event event2 = new Event();
 
-        user.getEventsAttending().add(event1);
-        user.getEventsAttending().add(event2);
+        user.setId(1L);
+        user.setName("Alex");
+        user.setEmail("alex@example.com");
+        user.setPhoneNumber("5141234567");
+        user.setPasswordHash("hashed");
+        user.setRole("USER");
 
-        assert(user.getEventsAttending().size() == 2);
-        assert(user.getEventsAttending().contains(event1));
-        assert(user.getEventsAttending().contains(event2));
+        assertEquals(1L, user.getId());
+        assertEquals("Alex", user.getName());
+        assertEquals("alex@example.com", user.getEmail());
+        assertEquals("5141234567", user.getPhoneNumber());
+        assertEquals("hashed", user.getPasswordHash());
+        assertEquals("USER", user.getRole());
     }
 }

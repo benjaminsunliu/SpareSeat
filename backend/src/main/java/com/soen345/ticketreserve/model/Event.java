@@ -2,8 +2,6 @@ package com.soen345.ticketreserve.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "events")
@@ -33,14 +31,6 @@ public class Event {
     private String description;
 
     private String status;
-
-    @ManyToMany
-    @JoinTable(
-        name = "event_attendees",
-        joinColumns = @JoinColumn(name = "event_id"),
-        inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private Set<User> attendees = new HashSet<>();
 
 
     // Constructors
