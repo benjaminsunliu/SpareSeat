@@ -25,6 +25,7 @@
         <activity android:name=".SignInActivity" />
         <activity android:name=".SignUpActivity" />
         <activity android:name=".LoggedInActivity" />
+        <activity android:name=".EventDetailsActivity" />
         <activity android:name=".HostDashboardActivity" />
         <activity android:name=".MainActivity" />
     </application>

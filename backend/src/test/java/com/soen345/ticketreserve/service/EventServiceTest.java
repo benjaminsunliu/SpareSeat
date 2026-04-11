@@ -4,6 +4,7 @@ import com.soen345.ticketreserve.exception.BadRequestException;
 import com.soen345.ticketreserve.model.Event;
 import com.soen345.ticketreserve.model.User;
 import com.soen345.ticketreserve.repository.EventRepository;
+import com.soen345.ticketreserve.repository.ReservationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -26,13 +27,15 @@ class EventServiceTest {
 
     @Mock
     private EventRepository eventRepository;
+    @Mock
+    private ReservationRepository reservationRepository;
 
     private EventService eventService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        eventService = new EventService(eventRepository);
+        eventService = new EventService(eventRepository, reservationRepository);
     }
 
     @Test
@@ -268,6 +271,20 @@ class EventServiceTest {
         Event result = eventService.updateEvent(10L, updates);
 
         assertEquals("General", result.getCategory());
+    }
+
+    @Test
+    void shouldReturnRemainingSpotsAfterReservations() {
+        Event event = validEvent();
+        event.setEventId(15L);
+        event.setEventCapacity(120);
+
+        when(reservationRepository.sumQuantityByEventId(15L)).thenReturn(45);
+
+        int remaining = eventService.getRemainingSpots(event);
+
+        assertEquals(75, remaining);
+        verify(reservationRepository).sumQuantityByEventId(15L);
     }
 
     private Event validEvent() {

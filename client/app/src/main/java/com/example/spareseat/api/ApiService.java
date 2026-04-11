@@ -2,6 +2,8 @@ package com.example.spareseat.api;
 
 import com.example.spareseat.model.EventResponse;
 import com.example.spareseat.model.LoginRequest;
+import com.example.spareseat.model.ReservationRequest;
+import com.example.spareseat.model.ReservationResponse;
 import com.example.spareseat.model.UserRegistrationRequest;
 import com.example.spareseat.model.UserResponse;
 
@@ -27,11 +29,17 @@ public interface ApiService {
     @GET("api/events")
     Call<List<EventResponse>> getAllEvents();
 
+    @GET("api/events/{id}")
+    Call<EventResponse> getEventById(@Path("id") long id);
+
     @GET("api/events/organizer/{organizerId}")
     Call<List<EventResponse>> getEventsByOrganizer(@Path("organizerId") long organizerId);
 
     @POST("api/events/create")
     Call<EventResponse> createEvent(@Body EventCreateRequest request);
+
+    @POST("api/reservations")
+    Call<ReservationResponse> createReservation(@Body ReservationRequest request);
 
     @PUT("api/events/update/{id}")
     Call<EventResponse> updateEvent(@Path("id") long id, @Body EventCreateRequest request);

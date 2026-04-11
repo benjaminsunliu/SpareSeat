@@ -10,11 +10,13 @@ public class EventResponse {
     private LocalDate date;
     private String location;
     private int eventCapacity;
+    private int remainingSpots;
     private String category;
 
     public EventResponse() {}
 
-    public EventResponse(Long eventId, Long organizerId, String title, String description, LocalDate date, String location, int eventCapacity, String category) {
+    public EventResponse(Long eventId, Long organizerId, String title, String description, LocalDate date,
+                         String location, int eventCapacity, int remainingSpots, String category) {
         this.eventId = eventId;
         this.organizerId = organizerId;
         this.title = title;
@@ -22,6 +24,7 @@ public class EventResponse {
         this.date = date;
         this.location = location;
         this.eventCapacity = eventCapacity;
+        this.remainingSpots = remainingSpots;
         this.category = category;
     }
 
@@ -57,6 +60,10 @@ public class EventResponse {
         return eventCapacity;
     }
 
+    public int getRemainingSpots() {
+        return remainingSpots;
+    }
+
     public void setEventId(Long eventId) {
         this.eventId = eventId;
     }
@@ -79,6 +86,10 @@ public class EventResponse {
 
     public void setEventCapacity(int eventCapacity) {
         this.eventCapacity = eventCapacity;
+    }
+
+    public void setRemainingSpots(int remainingSpots) {
+        this.remainingSpots = remainingSpots;
     }
 
     public String getCategory() {

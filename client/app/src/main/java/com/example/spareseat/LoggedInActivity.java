@@ -1,6 +1,7 @@
 package com.example.spareseat;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.spareseat.api.ApiClient;
 import com.example.spareseat.api.ApiService;
@@ -44,6 +46,7 @@ public class LoggedInActivity extends AppCompatActivity {
     private TextView tvEventCount, tvEmpty;
     private LinearLayout llEmpty;
     private ProgressBar progressBar;
+    private SwipeRefreshLayout swipeRefreshEvents;
     private AutoCompleteTextView actvLocation, actvCategory, actvDate;
 
     private final List<EventResponse> allEvents = new ArrayList<>();
@@ -81,13 +84,18 @@ public class LoggedInActivity extends AppCompatActivity {
         llEmpty      = findViewById(R.id.llEmpty);
         tvEmpty      = findViewById(R.id.tvEmpty);
         progressBar  = findViewById(R.id.progressBar);
+        swipeRefreshEvents = findViewById(R.id.swipeRefreshEvents);
         actvLocation = findViewById(R.id.actvLocation);
         actvCategory = findViewById(R.id.actvCategory);
         actvDate     = findViewById(R.id.actvDate);
 
+        swipeRefreshEvents.setColorSchemeColors(Color.parseColor("#89F336"));
+        swipeRefreshEvents.setOnRefreshListener(() -> fetchEvents(false, false));
+
         // RecyclerView
         rvEvents.setLayoutManager(new LinearLayoutManager(this));
-        eventAdapter = new EventAdapter(filteredEvents);
+        eventAdapter = new EventAdapter(filteredEvents,
+                event -> startActivity(EventDetailsActivity.createIntent(this, event)));
         rvEvents.setAdapter(eventAdapter);
 
         // Search
@@ -115,33 +123,56 @@ public class LoggedInActivity extends AppCompatActivity {
             applyFilters();
         });
 
-        fetchEvents();
     }
 
-    private void fetchEvents() {
-        progressBar.setVisibility(View.VISIBLE);
-        rvEvents.setVisibility(View.GONE);
-        llEmpty.setVisibility(View.GONE);
+    @Override
+    protected void onResume() {
+        super.onResume();
+        fetchEvents(allEvents.isEmpty(), false);
+    }
+
+    private void fetchEvents(boolean showFullScreenLoading, boolean showRefreshIndicator) {
+        if (showFullScreenLoading) {
+            progressBar.setVisibility(View.VISIBLE);
+            rvEvents.setVisibility(View.GONE);
+            llEmpty.setVisibility(View.GONE);
+        } else if (showRefreshIndicator && !swipeRefreshEvents.isRefreshing()) {
+            swipeRefreshEvents.setRefreshing(true);
+        }
 
         ApiService apiService = ApiClient.getService();
         apiService.getAllEvents().enqueue(new Callback<List<EventResponse>>() {
             @Override
             public void onResponse(Call<List<EventResponse>> call, Response<List<EventResponse>> response) {
                 progressBar.setVisibility(View.GONE);
+                swipeRefreshEvents.setRefreshing(false);
                 if (response.isSuccessful() && response.body() != null) {
                     allEvents.clear();
                     allEvents.addAll(response.body());
                     populateFilterDropdowns();
                     applyFilters();
                 } else {
-                    showEmptyState("Could not load events. Try again later.");
+                    if (allEvents.isEmpty()) {
+                        showEmptyState("Could not load events. Try again later.");
+                    } else {
+                        Toast.makeText(LoggedInActivity.this,
+                                "Could not refresh events right now.",
+                                Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<List<EventResponse>> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
-                showEmptyState("Network error. Check your connection.");
+                swipeRefreshEvents.setRefreshing(false);
+                if (allEvents.isEmpty()) {
+                    showEmptyState("Network error. Check your connection.");
+                } else {
+                    Toast.makeText(LoggedInActivity.this,
+                            "Refresh failed. Check your connection.",
+                            Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

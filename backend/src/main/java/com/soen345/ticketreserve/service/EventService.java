@@ -1,6 +1,7 @@
 package com.soen345.ticketreserve.service;
 
 import com.soen345.ticketreserve.model.Event;
+import com.soen345.ticketreserve.repository.ReservationRepository;
 import com.soen345.ticketreserve.repository.EventRepository;
 import com.soen345.ticketreserve.exception.BadRequestException;
 import java.util.List;
@@ -9,9 +10,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class EventService {
     private final EventRepository eventRepository;
+    private final ReservationRepository reservationRepository;
 
-    public EventService(EventRepository eventRepository) {
+    public EventService(EventRepository eventRepository, ReservationRepository reservationRepository) {
         this.eventRepository = eventRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public List<Event> getAllEvents() {
@@ -78,5 +81,13 @@ public class EventService {
             throw new BadRequestException("Event not found with id: " + eventId);
         }
         eventRepository.deleteById(eventId);
+    }
+
+    public int getRemainingSpots(Event event) {
+        if (event == null || event.getEventId() == null) {
+            return 0;
+        }
+        int reservedSpots = reservationRepository.sumQuantityByEventId(event.getEventId());
+        return Math.max(event.getEventCapacity() - reservedSpots, 0);
     }
 }

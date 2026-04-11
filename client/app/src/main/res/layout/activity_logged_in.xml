@@ -257,46 +257,52 @@
         android:layout_marginBottom="2dp"/>
 
     <!-- ── EVENTS LIST (fills rest of screen) ── -->
-    <FrameLayout
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshEvents"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvEvents"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingHorizontal="20dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="24dp"
-            android:clipToPadding="false"
-            android:visibility="gone"/>
+            android:layout_height="match_parent">
 
-        <!-- Empty / error state -->
-        <LinearLayout
-            android:id="@+id/llEmpty"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:visibility="gone">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvEvents"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingHorizontal="20dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="24dp"
+                android:clipToPadding="false"
+                android:visibility="gone"/>
 
-            <TextView
-                android:id="@+id/tvEmpty"
+            <!-- Empty / error state -->
+            <LinearLayout
+                android:id="@+id/llEmpty"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tvEmpty"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No events found"
+                    android:textColor="#AAAAAA"
+                    android:textSize="16sp"/>
+            </LinearLayout>
+
+            <!-- Loading indicator -->
+            <ProgressBar
+                android:id="@+id/progressBar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="No events found"
-                android:textColor="#AAAAAA"
-                android:textSize="16sp"/>
-        </LinearLayout>
-
-        <!-- Loading indicator -->
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:indeterminateTint="#89F336"/>
-    </FrameLayout>
+                android:layout_gravity="center"
+                android:indeterminateTint="#89F336"/>
+        </FrameLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </LinearLayout>

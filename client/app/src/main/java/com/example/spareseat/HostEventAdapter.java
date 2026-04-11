@@ -53,8 +53,10 @@ public class HostEventAdapter extends RecyclerView.Adapter<HostEventAdapter.Host
         holder.tvDescription.setText(event.getDescription() != null && !event.getDescription().isEmpty()
                 ? event.getDescription() : "No description available.");
 
-        int capacity = event.getEventCapacity();
-        holder.tvCapacity.setText(capacity > 0 ? capacity + " spots available" : "Capacity TBD");
+        int remainingSpots = event.getRemainingSpots();
+        holder.tvCapacity.setText(remainingSpots > 0
+                ? remainingSpots + " spots available"
+                : "Sold out");
 
         holder.btnMenu.setOnClickListener(v -> {
             PopupMenu popup = new PopupMenu(v.getContext(), v);

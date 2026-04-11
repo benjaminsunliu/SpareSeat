@@ -34,6 +34,11 @@ public class EventController {
         return ResponseEntity.ok(responses);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<EventResponse> getEventById(@PathVariable Long id) {
+        return ResponseEntity.ok(toResponse(eventService.getEventById(id)));
+    }
+
     @GetMapping("/organizer/{organizerId}")
     public ResponseEntity<List<EventResponse>> getEventsByOrganizer(@PathVariable Long organizerId) {
         List<EventResponse> responses = eventService.getEventsByOrganizerId(organizerId)
@@ -89,6 +94,7 @@ public class EventController {
                 event.getEventDate(),
                 event.getLocation(),
                 event.getEventCapacity(),
+                eventService.getRemainingSpots(event),
                 event.getCategory()
         );
     }

@@ -13,11 +13,16 @@ import com.example.spareseat.model.EventResponse;
 import java.util.List;
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHolder> {
+    interface OnEventClickListener {
+        void onEventClick(EventResponse event);
+    }
 
     private final List<EventResponse> events;
+    private final OnEventClickListener listener;
 
-    public EventAdapter(List<EventResponse> events) {
+    public EventAdapter(List<EventResponse> events, OnEventClickListener listener) {
         this.events = events;
+        this.listener = listener;
     }
 
     @NonNull
@@ -44,8 +49,12 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         holder.tvDescription.setText(event.getDescription() != null && !event.getDescription().isEmpty()
                 ? event.getDescription() : "No description available.");
 
-        int capacity = event.getEventCapacity();
-        holder.tvCapacity.setText(capacity > 0 ? capacity + " spots available" : "Capacity TBD");
+        int remainingSpots = event.getRemainingSpots();
+        holder.tvCapacity.setText(remainingSpots > 0
+                ? remainingSpots + " spots available"
+                : "Sold out");
+
+        holder.itemView.setOnClickListener(v -> listener.onEventClick(event));
     }
 
     @Override
