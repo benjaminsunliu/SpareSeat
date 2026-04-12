@@ -305,4 +305,15 @@
         </FrameLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:elevation="10dp"
+        app:itemIconTint="@color/customer_bottom_nav_colors"
+        app:itemTextColor="@color/customer_bottom_nav_colors"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/customer_bottom_nav_menu" />
+
 </LinearLayout>

@@ -5,6 +5,7 @@ import com.soen345.ticketreserve.model.Event;
 import com.soen345.ticketreserve.model.User;
 import com.soen345.ticketreserve.service.EventService;
 import com.soen345.ticketreserve.service.UserService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -38,6 +39,17 @@ class EventControllerTest {
         @MockitoBean
         private UserService userService;
 
+    @BeforeEach
+    void setUp() {
+        when(eventService.getStatus(any(Event.class))).thenAnswer(invocation -> {
+            Event event = invocation.getArgument(0);
+            if (event.getStatus() == null || event.getStatus().trim().isEmpty()) {
+                return EventService.STATUS_ACTIVE;
+            }
+            return event.getStatus();
+        });
+    }
+
     @Test
     void shouldReturnAllEvents() throws Exception {
         Event eventOne = new Event();
@@ -48,6 +60,7 @@ class EventControllerTest {
         eventOne.setLocation("Montreal");
         eventOne.setEventCapacity(120);
         eventOne.setCategory("Tech");
+        eventOne.setStatus("ACTIVE");
 
         Event eventTwo = new Event();
         eventTwo.setEventId(2L);
@@ -57,6 +70,7 @@ class EventControllerTest {
         eventTwo.setLocation("Toronto");
         eventTwo.setEventCapacity(350);
         eventTwo.setCategory("Music");
+        eventTwo.setStatus("ACTIVE");
 
         when(eventService.getAllEvents()).thenReturn(List.of(eventOne, eventTwo));
         when(eventService.getRemainingSpots(eventOne)).thenReturn(95);
@@ -69,11 +83,13 @@ class EventControllerTest {
                 .andExpect(jsonPath("$[0].date").value("2026-04-10"))
                 .andExpect(jsonPath("$[0].remainingSpots").value(95))
                 .andExpect(jsonPath("$[0].category").value("Tech"))
+                .andExpect(jsonPath("$[0].status").value("ACTIVE"))
                 .andExpect(jsonPath("$[1].eventId").value(2))
                 .andExpect(jsonPath("$[1].title").value("Summer Concert"))
                 .andExpect(jsonPath("$[1].date").value("2026-08-21"))
                 .andExpect(jsonPath("$[1].remainingSpots").value(320))
-                .andExpect(jsonPath("$[1].category").value("Music"));
+                .andExpect(jsonPath("$[1].category").value("Music"))
+                .andExpect(jsonPath("$[1].status").value("ACTIVE"));
     }
 
     @Test
@@ -90,6 +106,7 @@ class EventControllerTest {
         event.setLocation("Montreal");
         event.setEventCapacity(40);
         event.setCategory("Workshop");
+        event.setStatus("ACTIVE");
 
         when(eventService.getEventById(9L)).thenReturn(event);
         when(eventService.getRemainingSpots(event)).thenReturn(27);
@@ -99,7 +116,8 @@ class EventControllerTest {
                 .andExpect(jsonPath("$.eventId").value(9))
                 .andExpect(jsonPath("$.organizerId").value(4))
                 .andExpect(jsonPath("$.title").value("Design Jam"))
-                .andExpect(jsonPath("$.remainingSpots").value(27));
+                .andExpect(jsonPath("$.remainingSpots").value(27))
+                .andExpect(jsonPath("$.status").value("ACTIVE"));
     }
 
     @Test
@@ -122,6 +140,7 @@ class EventControllerTest {
         created.setLocation("Montreal");
         created.setCategory("General");
         created.setEventCapacity(120);
+        created.setStatus("ACTIVE");
 
         User organizer = new User();
         organizer.setId(1L);
@@ -151,7 +170,8 @@ class EventControllerTest {
                 .andExpect(jsonPath("$.location").value("Montreal"))
                 .andExpect(jsonPath("$.category").value("General"))
                 .andExpect(jsonPath("$.remainingSpots").value(120))
-                .andExpect(jsonPath("$.eventCapacity").value(120));
+                .andExpect(jsonPath("$.eventCapacity").value(120))
+                .andExpect(jsonPath("$.status").value("ACTIVE"));
     }
 
     @Test
@@ -188,6 +208,27 @@ class EventControllerTest {
     }
 
     @Test
+    void shouldCancelEvent() throws Exception {
+        Event cancelled = new Event();
+        cancelled.setEventId(11L);
+        cancelled.setTitle("Cancelled Event");
+        cancelled.setDescription("Cancelled desc");
+        cancelled.setEventDate(LocalDate.of(2026, 8, 1));
+        cancelled.setLocation("Montreal");
+        cancelled.setCategory("General");
+        cancelled.setEventCapacity(50);
+        cancelled.setStatus("CANCELLED");
+
+        when(eventService.cancelEvent(11L)).thenReturn(cancelled);
+        when(eventService.getRemainingSpots(cancelled)).thenReturn(25);
+
+        mockMvc.perform(put("/api/events/cancel/11"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.eventId").value(11))
+                .andExpect(jsonPath("$.status").value("CANCELLED"));
+    }
+
+    @Test
     void shouldReturnBadRequestWhenDeleteFails() throws Exception {
         doThrow(new BadRequestException("Event not found with id: 999"))
                 .when(eventService).deleteEvent(999L);
@@ -211,6 +252,7 @@ class EventControllerTest {
         e1.setEventCapacity(100);
         e1.setCategory("Social");
         e1.setOrganizer(organizer);
+        e1.setStatus("ACTIVE");
 
         Event e2 = new Event();
         e2.setEventId(2L);
@@ -221,6 +263,7 @@ class EventControllerTest {
         e2.setEventCapacity(30);
         e2.setCategory("Tech");
         e2.setOrganizer(organizer);
+        e2.setStatus("CANCELLED");
 
         when(eventService.getEventsByOrganizerId(7L)).thenReturn(List.of(e1, e2));
         when(eventService.getRemainingSpots(e1)).thenReturn(80);
@@ -232,10 +275,12 @@ class EventControllerTest {
                 .andExpect(jsonPath("$[0].title").value("Host Gala"))
                 .andExpect(jsonPath("$[0].organizerId").value(7))
                 .andExpect(jsonPath("$[0].remainingSpots").value(80))
+                .andExpect(jsonPath("$[0].status").value("ACTIVE"))
                 .andExpect(jsonPath("$[1].eventId").value(2))
                 .andExpect(jsonPath("$[1].title").value("Host Workshop"))
                 .andExpect(jsonPath("$[1].organizerId").value(7))
-                .andExpect(jsonPath("$[1].remainingSpots").value(12));
+                .andExpect(jsonPath("$[1].remainingSpots").value(12))
+                .andExpect(jsonPath("$[1].status").value("CANCELLED"));
     }
 
     @Test
@@ -257,6 +302,7 @@ class EventControllerTest {
         updated.setLocation("Ottawa");
         updated.setCategory("General");
         updated.setEventCapacity(80);
+        updated.setStatus("ACTIVE");
 
         when(eventService.updateEvent(any(Long.class), any(Event.class))).thenReturn(updated);
         when(eventService.getRemainingSpots(updated)).thenReturn(80);
@@ -278,7 +324,8 @@ class EventControllerTest {
                 .andExpect(jsonPath("$.title").value("Updated Meetup"))
                 .andExpect(jsonPath("$.location").value("Ottawa"))
                 .andExpect(jsonPath("$.remainingSpots").value(80))
-                .andExpect(jsonPath("$.eventCapacity").value(80));
+                .andExpect(jsonPath("$.eventCapacity").value(80))
+                .andExpect(jsonPath("$.status").value("ACTIVE"));
     }
 
     @Test

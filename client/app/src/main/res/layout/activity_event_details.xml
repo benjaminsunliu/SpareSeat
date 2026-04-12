@@ -76,6 +76,20 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/tvEventStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_status_cancelled"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="6dp"
+                    android:text="Cancelled"
+                    android:textColor="@color/danger"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+                <TextView
                     android:id="@+id/tvEventTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

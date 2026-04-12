@@ -11,14 +11,17 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.spareseat.model.EventResponse;
+import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
 
 public class HostEventAdapter extends RecyclerView.Adapter<HostEventAdapter.HostEventViewHolder> {
+    private static final String STATUS_CANCELLED = "CANCELLED";
 
     interface MenuClickListener {
         void onEdit(EventResponse event);
         void onDelete(EventResponse event);
+        void onCancel(EventResponse event);
     }
 
     private final List<EventResponse> events;
@@ -54,9 +57,22 @@ public class HostEventAdapter extends RecyclerView.Adapter<HostEventAdapter.Host
                 ? event.getDescription() : "No description available.");
 
         int remainingSpots = event.getRemainingSpots();
-        holder.tvCapacity.setText(remainingSpots > 0
-                ? remainingSpots + " spots available"
-                : "Sold out");
+        boolean isCancelled = STATUS_CANCELLED.equalsIgnoreCase(event.getStatus());
+        if (isCancelled) {
+            holder.tvCapacity.setText("Status: Cancelled");
+            holder.tvCapacity.setTextColor(holder.itemView.getContext().getColor(R.color.danger));
+        } else {
+            holder.tvCapacity.setText(remainingSpots > 0
+                    ? remainingSpots + " spots available"
+                    : "Sold out");
+            holder.tvCapacity.setTextColor(holder.itemView.getContext().getColor(
+                    remainingSpots > 0 ? R.color.available_green : R.color.text_muted
+            ));
+        }
+
+        holder.btnCancelEvent.setEnabled(!isCancelled);
+        holder.btnCancelEvent.setText(isCancelled ? "Cancelled" : "Cancel Event");
+        holder.btnCancelEvent.setOnClickListener(v -> listener.onCancel(event));
 
         holder.btnMenu.setOnClickListener(v -> {
             PopupMenu popup = new PopupMenu(v.getContext(), v);
@@ -82,6 +98,7 @@ public class HostEventAdapter extends RecyclerView.Adapter<HostEventAdapter.Host
     static class HostEventViewHolder extends RecyclerView.ViewHolder {
         final TextView tvTitle, tvCategory, tvDate, tvLocation, tvDescription, tvCapacity;
         final ImageButton btnMenu;
+        final MaterialButton btnCancelEvent;
 
         HostEventViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -92,6 +109,7 @@ public class HostEventAdapter extends RecyclerView.Adapter<HostEventAdapter.Host
             tvDescription = itemView.findViewById(R.id.tvDescription);
             tvCapacity    = itemView.findViewById(R.id.tvCapacity);
             btnMenu       = itemView.findViewById(R.id.btnMenu);
+            btnCancelEvent = itemView.findViewById(R.id.btnCancelEvent);
         }
     }
 }

@@ -79,6 +79,11 @@ public class EventController {
         return ResponseEntity.ok(toResponse(updatedEvent));
     }
 
+    @PutMapping("/cancel/{id}")
+    public ResponseEntity<EventResponse> cancelEvent(@PathVariable Long id) {
+        return ResponseEntity.ok(toResponse(eventService.cancelEvent(id)));
+    }
+
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteEvent(@PathVariable("id") Long id) {
         eventService.deleteEvent(id);
@@ -95,7 +100,8 @@ public class EventController {
                 event.getLocation(),
                 event.getEventCapacity(),
                 eventService.getRemainingSpots(event),
-                event.getCategory()
+                event.getCategory(),
+                eventService.getStatus(event)
         );
     }
 }

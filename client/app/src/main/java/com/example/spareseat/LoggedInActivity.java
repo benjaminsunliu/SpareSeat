@@ -22,6 +22,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.spareseat.api.ApiClient;
 import com.example.spareseat.api.ApiService;
 import com.example.spareseat.model.EventResponse;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.text.ParseException;
@@ -48,6 +49,7 @@ public class LoggedInActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private SwipeRefreshLayout swipeRefreshEvents;
     private AutoCompleteTextView actvLocation, actvCategory, actvDate;
+    private BottomNavigationView bottomNavigationView;
 
     private final List<EventResponse> allEvents = new ArrayList<>();
     private final List<EventResponse> filteredEvents = new ArrayList<>();
@@ -88,9 +90,11 @@ public class LoggedInActivity extends AppCompatActivity {
         actvLocation = findViewById(R.id.actvLocation);
         actvCategory = findViewById(R.id.actvCategory);
         actvDate     = findViewById(R.id.actvDate);
+        bottomNavigationView = findViewById(R.id.bottomNavigation);
 
         swipeRefreshEvents.setColorSchemeColors(Color.parseColor("#89F336"));
         swipeRefreshEvents.setOnRefreshListener(() -> fetchEvents(false, false));
+        CustomerNavigationHelper.setup(this, bottomNavigationView, R.id.navBrowse);
 
         // RecyclerView
         rvEvents.setLayoutManager(new LinearLayoutManager(this));
@@ -128,6 +132,7 @@ public class LoggedInActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        CustomerNavigationHelper.syncSelection(bottomNavigationView, R.id.navBrowse);
         fetchEvents(allEvents.isEmpty(), false);
     }
 

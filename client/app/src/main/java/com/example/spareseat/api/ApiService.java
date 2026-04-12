@@ -18,6 +18,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface ApiService {
     @POST("api/users/login")
@@ -41,8 +42,18 @@ public interface ApiService {
     @POST("api/reservations")
     Call<ReservationResponse> createReservation(@Body ReservationRequest request);
 
+    @GET("api/reservations/user/{userId}")
+    Call<List<ReservationResponse>> getReservationsForUser(@Path("userId") long userId);
+
+    @DELETE("api/reservations/{reservationId}")
+    Call<ReservationResponse> cancelReservation(@Path("reservationId") long reservationId,
+                                                @Query("userId") long userId);
+
     @PUT("api/events/update/{id}")
     Call<EventResponse> updateEvent(@Path("id") long id, @Body EventCreateRequest request);
+
+    @PUT("api/events/cancel/{id}")
+    Call<EventResponse> cancelEvent(@Path("id") long id);
 
     @DELETE("api/events/delete/{id}")
     Call<Void> deleteEvent(@Path("id") long id);

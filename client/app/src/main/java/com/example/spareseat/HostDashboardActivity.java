@@ -74,6 +74,11 @@ public class HostDashboardActivity extends AppCompatActivity {
             public void onDelete(EventResponse event) {
                 confirmDelete(event);
             }
+
+            @Override
+            public void onCancel(EventResponse event) {
+                confirmCancel(event);
+            }
         });
 
         rvHostEvents.setLayoutManager(new LinearLayoutManager(this));
@@ -223,12 +228,9 @@ public class HostDashboardActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<EventResponse> call, Response<EventResponse> response) {
                 btnSave.setEnabled(true);
-                if (response.isSuccessful() && response.body() != null) {
-                    events.add(0, response.body());
-                    adapter.notifyItemInserted(0);
-                    rvHostEvents.scrollToPosition(0);
-                    updateListVisibility();
+                if (response.isSuccessful()) {
                     dialog.dismiss();
+                    fetchMyEvents();
                     Toast.makeText(HostDashboardActivity.this, "Event created!", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(HostDashboardActivity.this, "Failed to create event.", Toast.LENGTH_SHORT).show();
@@ -250,13 +252,9 @@ public class HostDashboardActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<EventResponse> call, Response<EventResponse> response) {
                 btnSave.setEnabled(true);
-                if (response.isSuccessful() && response.body() != null) {
-                    int index = indexById(eventId);
-                    if (index != -1) {
-                        events.set(index, response.body());
-                        adapter.notifyItemChanged(index);
-                    }
+                if (response.isSuccessful()) {
                     dialog.dismiss();
+                    fetchMyEvents();
                     Toast.makeText(HostDashboardActivity.this, "Event updated!", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(HostDashboardActivity.this, "Failed to update event.", Toast.LENGTH_SHORT).show();
@@ -280,6 +278,34 @@ public class HostDashboardActivity extends AppCompatActivity {
                 .setPositiveButton("Delete", (d, w) -> submitDelete(event))
                 .setNegativeButton("Cancel", null)
                 .show();
+    }
+
+    private void confirmCancel(EventResponse event) {
+        new AlertDialog.Builder(this)
+                .setTitle("Cancel Event")
+                .setMessage("Cancel \"" + event.getTitle() + "\"? Customers with reservations will still see it as cancelled.")
+                .setPositiveButton("Cancel Event", (d, w) -> submitCancel(event))
+                .setNegativeButton("Keep Event", null)
+                .show();
+    }
+
+    private void submitCancel(EventResponse event) {
+        ApiClient.getService().cancelEvent(event.getEventId()).enqueue(new Callback<EventResponse>() {
+            @Override
+            public void onResponse(Call<EventResponse> call, Response<EventResponse> response) {
+                if (response.isSuccessful()) {
+                    fetchMyEvents();
+                    Toast.makeText(HostDashboardActivity.this, "Event cancelled.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(HostDashboardActivity.this, "Failed to cancel event.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<EventResponse> call, Throwable t) {
+                Toast.makeText(HostDashboardActivity.this, "Connection error.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void submitDelete(EventResponse event) {
@@ -316,19 +342,24 @@ public class HostDashboardActivity extends AppCompatActivity {
     }
 
     private void updateListVisibility() {
+        updateEventCountLabel();
         if (events.isEmpty()) {
             showEmpty("No events yet. Create your first one!");
         } else {
-            tvEventCount.setText("My Events (" + events.size() + ")");
             rvHostEvents.setVisibility(View.VISIBLE);
             llEmpty.setVisibility(View.GONE);
         }
     }
 
     private void showEmpty(String message) {
+        updateEventCountLabel();
         tvEmpty.setText(message);
         llEmpty.setVisibility(View.VISIBLE);
         rvHostEvents.setVisibility(View.GONE);
+    }
+
+    private void updateEventCountLabel() {
+        tvEventCount.setText("My Events (" + events.size() + ")");
     }
 
     public static boolean isValidDateFormat(String date) {

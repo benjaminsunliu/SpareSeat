@@ -7,6 +7,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/reservations")
 @CrossOrigin(origins = "*")
@@ -22,5 +24,16 @@ public class ReservationController {
     public ResponseEntity<ReservationResponse> createReservation(@Valid @RequestBody ReservationRequest request) {
         ReservationResponse response = reservationService.createReservation(request);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<ReservationResponse>> getReservationsForUser(@PathVariable Long userId) {
+        return ResponseEntity.ok(reservationService.getReservationsForUser(userId));
+    }
+
+    @DeleteMapping("/{reservationId}")
+    public ResponseEntity<ReservationResponse> cancelReservation(@PathVariable Long reservationId,
+                                                                 @RequestParam Long userId) {
+        return ResponseEntity.ok(reservationService.cancelReservation(userId, reservationId));
     }
 }

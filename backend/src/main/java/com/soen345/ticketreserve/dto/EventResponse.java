@@ -12,11 +12,12 @@ public class EventResponse {
     private int eventCapacity;
     private int remainingSpots;
     private String category;
+    private String status;
 
     public EventResponse() {}
 
     public EventResponse(Long eventId, Long organizerId, String title, String description, LocalDate date,
-                         String location, int eventCapacity, int remainingSpots, String category) {
+                         String location, int eventCapacity, int remainingSpots, String category, String status) {
         this.eventId = eventId;
         this.organizerId = organizerId;
         this.title = title;
@@ -26,6 +27,7 @@ public class EventResponse {
         this.eventCapacity = eventCapacity;
         this.remainingSpots = remainingSpots;
         this.category = category;
+        this.status = status;
     }
 
     public Long getEventId() {
@@ -98,5 +100,13 @@ public class EventResponse {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

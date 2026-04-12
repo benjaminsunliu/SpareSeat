@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Spareseat</string>
+    <string name="nav_browse">Browse</string>
+    <string name="nav_my_reservations">My Reservations</string>
+    <string name="cancel_reservation">Cancel Reservation</string>
+    <string name="cancelling_reservation">Cancelling...</string>
 </resources>

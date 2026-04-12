@@ -31,10 +31,12 @@ import retrofit2.Response;
 
 public class EventDetailsActivity extends AppCompatActivity {
     public static final String EXTRA_EVENT = "extra_event";
+    private static final String STATUS_CANCELLED = "CANCELLED";
 
     private EventResponse event;
     private TextView tvTitle;
     private TextView tvCategory;
+    private TextView tvEventStatus;
     private TextView tvDate;
     private TextView tvLocation;
     private TextView tvDescription;
@@ -69,12 +71,13 @@ public class EventDetailsActivity extends AppCompatActivity {
             return;
         }
 
+        isHostUser = "HOST".equals(SessionManager.getUserRole(this));
+
         swipeRefreshEventDetails.setColorSchemeColors(Color.parseColor("#89F336"));
         swipeRefreshEventDetails.setOnRefreshListener(() -> refreshEvent(false));
 
         populateEvent();
 
-        isHostUser = "HOST".equals(SessionManager.getUserRole(this));
         if (isHostUser) {
             llReservationSection.setVisibility(View.GONE);
             return;
@@ -86,6 +89,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private void bindViews() {
         tvTitle = findViewById(R.id.tvEventTitle);
         tvCategory = findViewById(R.id.tvEventCategory);
+        tvEventStatus = findViewById(R.id.tvEventStatus);
         tvDate = findViewById(R.id.tvEventDate);
         tvLocation = findViewById(R.id.tvEventLocation);
         tvDescription = findViewById(R.id.tvEventDescription);
@@ -122,6 +126,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         tvLocation.setText(valueOrFallback(event.getLocation(), "Location to be announced"));
         tvDescription.setText(valueOrFallback(event.getDescription(), "No description available."));
 
+        updateEventStatusViews();
         updateCapacityLabel();
     }
 
@@ -132,6 +137,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         tvLocation.setText("Location to be announced");
         tvDescription.setText("We couldn't load this event. Please go back and try again.");
         tvCapacity.setText("Capacity unavailable");
+        tvEventStatus.setVisibility(View.GONE);
         llReservationSection.setVisibility(View.GONE);
     }
 
@@ -282,15 +288,41 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     private void updateCapacityLabel() {
+        boolean isCancelled = STATUS_CANCELLED.equalsIgnoreCase(event.getStatus());
+        if (isCancelled) {
+            tvCapacity.setText("Event cancelled");
+            tvCapacity.setTextColor(getColor(R.color.danger));
+            if (!isHostUser) {
+                etQuantity.setEnabled(false);
+                btnReserve.setEnabled(false);
+                btnReserve.setText("Event Cancelled");
+                showStatus("This event has been cancelled.", false);
+            }
+            return;
+        }
+
+        etQuantity.setEnabled(true);
         int remainingSpots = event.getRemainingSpots();
         tvCapacity.setText(remainingSpots > 0
                 ? remainingSpots + " spots available"
                 : "Sold out");
+        tvCapacity.setTextColor(getColor(remainingSpots > 0 ? R.color.available_green : R.color.text_muted));
         btnReserve.setEnabled(remainingSpots > 0);
         if (remainingSpots <= 0) {
             btnReserve.setText("Event Sold Out");
         } else {
             btnReserve.setText("Sign Up For Event");
+            if (!isHostUser) {
+                hideStatus();
+            }
+        }
+    }
+
+    private void updateEventStatusViews() {
+        boolean isCancelled = STATUS_CANCELLED.equalsIgnoreCase(event.getStatus());
+        tvEventStatus.setVisibility(isCancelled ? View.VISIBLE : View.GONE);
+        if (isCancelled) {
+            tvEventStatus.setText("Cancelled");
         }
     }
 }

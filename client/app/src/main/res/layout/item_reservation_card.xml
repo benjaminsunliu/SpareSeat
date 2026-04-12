@@ -5,11 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="14dp"
+    app:cardBackgroundColor="#FFFFFF"
     app:cardCornerRadius="18dp"
     app:cardElevation="2dp"
-    app:strokeColor="#EFEFEF"
-    app:strokeWidth="1dp"
-    app:cardBackgroundColor="#FFFFFF">
+    app:strokeColor="@color/border_subtle"
+    app:strokeWidth="1dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,128 +17,108 @@
         android:orientation="vertical"
         android:padding="18dp">
 
-        <!-- ── TOP ACCENT BAR ── -->
         <View
             android:layout_width="36dp"
             android:layout_height="4dp"
-            android:background="@drawable/bg_category_badge"
-            android:layout_marginBottom="12dp"/>
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/bg_category_badge" />
 
-        <!-- ── TITLE + 3-DOT MENU ── -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-
-            <TextView
-                android:id="@+id/tvTitle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Event Title"
-                android:textColor="#111111"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:layout_marginEnd="8dp"/>
-
-            <TextView
-                android:id="@+id/tvCategory"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="General"
-                android:textColor="#111111"
-                android:textSize="11sp"
-                android:textStyle="bold"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="5dp"
-                android:background="@drawable/bg_category_badge"
-                android:layout_marginEnd="8dp"/>
-
-            <ImageButton
-                android:id="@+id/btnMenu"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_more_vert"
-                android:contentDescription="More options"/>
-        </LinearLayout>
-
-        <!-- ── DATE & LOCATION ── -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="10dp">
-
-            <TextView
-                android:id="@+id/tvDate"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Date"
-                android:textColor="#555555"
-                android:textSize="12sp"/>
-
-            <TextView
-                android:id="@+id/tvLocation"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Location"
-                android:textColor="#555555"
-                android:textSize="12sp"
-                android:gravity="end"/>
-        </LinearLayout>
-
-        <!-- ── DIVIDER ── -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#F2F2F2"
-            android:layout_marginVertical="12dp"/>
-
-        <!-- ── DESCRIPTION ── -->
-        <TextView
-            android:id="@+id/tvDescription"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Description"
-            android:textColor="#777777"
-            android:textSize="13sp"
-            android:lineSpacingMultiplier="1.4"
-            android:maxLines="2"
-            android:ellipsize="end"/>
-
-        <!-- ── CAPACITY ── -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/tvCapacity"
+                android:id="@+id/tvReservationTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="30 spots available"
-                android:textColor="#3DB000"
-                android:textSize="12sp"
-                android:textStyle="bold"/>
+                android:layout_marginEnd="10dp"
+                android:text="Event Title"
+                android:textColor="@color/text_primary"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
-            <View
+            <TextView
+                android:id="@+id/tvReservationQuantity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_category_badge"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="5dp"
+                android:text="2 spots reserved"
+                android:textColor="@color/text_primary"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvReservationDate"
                 android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="0"
-                android:alpha="0" />
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Date"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tvReservationLocation"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:text="Location"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginVertical="12dp"
+            android:background="#F2F2F2" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvReservationMeta"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Reservation #1"
+                android:textColor="@color/text_muted"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tvReservationEventStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/bg_status_cancelled"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="5dp"
+                android:text="Cancelled"
+                android:textColor="@color/danger"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCancelEvent"
+                android:id="@+id/btnCancelReservation"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
-                android:text="Cancel Event"
+                android:text="@string/cancel_reservation"
                 android:textAllCaps="false"
                 android:textColor="@color/danger"
                 app:backgroundTint="@color/danger_surface"

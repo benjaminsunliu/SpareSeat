@@ -6,9 +6,13 @@ import com.soen345.ticketreserve.repository.EventRepository;
 import com.soen345.ticketreserve.exception.BadRequestException;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class EventService {
+    public static final String STATUS_ACTIVE = "ACTIVE";
+    public static final String STATUS_CANCELLED = "CANCELLED";
+
     private final EventRepository eventRepository;
     private final ReservationRepository reservationRepository;
 
@@ -18,7 +22,10 @@ public class EventService {
     }
 
     public List<Event> getAllEvents() {
-        return eventRepository.findAll();
+        return eventRepository.findAll()
+                .stream()
+                .filter(event -> !isCancelled(event))
+                .toList();
     }
 
     public List<Event> getEventsByOrganizerId(Long organizerId) {
@@ -50,6 +57,7 @@ public class EventService {
         if (event.getEventCapacity() <= 0) {
             throw new BadRequestException("Event capacity must be greater than 0");
         }
+        event.setStatus(STATUS_ACTIVE);
         return eventRepository.save(event);
     }
 
@@ -76,10 +84,18 @@ public class EventService {
         return eventRepository.save(existing);
     }
 
+    public Event cancelEvent(Long eventId) {
+        Event existing = getEventById(eventId);
+        existing.setStatus(STATUS_CANCELLED);
+        return eventRepository.save(existing);
+    }
+
+    @Transactional
     public void deleteEvent(Long eventId) {
         if (!eventRepository.existsById(eventId)) {
             throw new BadRequestException("Event not found with id: " + eventId);
         }
+        reservationRepository.deleteByEvent_EventId(eventId);
         eventRepository.deleteById(eventId);
     }
 
@@ -89,5 +105,16 @@ public class EventService {
         }
         int reservedSpots = reservationRepository.sumQuantityByEventId(event.getEventId());
         return Math.max(event.getEventCapacity() - reservedSpots, 0);
+    }
+
+    public String getStatus(Event event) {
+        if (event == null || event.getStatus() == null || event.getStatus().trim().isEmpty()) {
+            return STATUS_ACTIVE;
+        }
+        return event.getStatus();
+    }
+
+    private boolean isCancelled(Event event) {
+        return STATUS_CANCELLED.equalsIgnoreCase(getStatus(event));
     }
 }

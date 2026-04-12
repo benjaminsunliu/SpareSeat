@@ -6,6 +6,10 @@ public class ReservationResponse {
     private String customerEmail;
     private String eventName;
     private int quantity;
+    private Long eventId;
+    private String eventDate;
+    private String eventLocation;
+    private String eventStatus;
 
     public Long getReservationId() {
         return reservationId;
@@ -25,5 +29,21 @@ public class ReservationResponse {
 
     public int getQuantity() {
         return quantity;
+    }
+
+    public Long getEventId() {
+        return eventId;
+    }
+
+    public String getEventDate() {
+        return eventDate;
+    }
+
+    public String getEventLocation() {
+        return eventLocation;
+    }
+
+    public String getEventStatus() {
+        return eventStatus;
     }
 }

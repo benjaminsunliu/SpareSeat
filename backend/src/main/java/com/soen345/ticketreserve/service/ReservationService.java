@@ -3,14 +3,15 @@ package com.soen345.ticketreserve.service;
 import com.soen345.ticketreserve.dto.ReservationRequest;
 import com.soen345.ticketreserve.dto.ReservationResponse;
 import com.soen345.ticketreserve.exception.BadRequestException;
+import com.soen345.ticketreserve.model.Event;
 import com.soen345.ticketreserve.model.Reservation;
 import com.soen345.ticketreserve.model.User;
-import com.soen345.ticketreserve.model.Event;
+import com.soen345.ticketreserve.repository.EventRepository;
 import com.soen345.ticketreserve.repository.ReservationRepository;
 import com.soen345.ticketreserve.repository.UserRepository;
-import com.soen345.ticketreserve.repository.EventRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -28,11 +29,12 @@ public class ReservationService {
         this.eventRepository = eventRepository;
     }
 
-        public ReservationResponse createReservation(ReservationRequest request) {
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + request.getUserId()));
-        Event event = eventRepository.findById(request.getEventId())
-                .orElseThrow(() -> new IllegalArgumentException("Event not found with ID: " + request.getEventId()));
+    public ReservationResponse createReservation(ReservationRequest request) {
+        User user = findUser(request.getUserId());
+        Event event = findEvent(request.getEventId());
+        if (EventService.STATUS_CANCELLED.equalsIgnoreCase(event.getStatus())) {
+            throw new BadRequestException("This event has been cancelled.");
+        }
         if (request.getQuantity() <= 0) {
             throw new BadRequestException("Quantity must be at least 1");
         }
@@ -58,19 +60,58 @@ public class ReservationService {
             savedReservation.getId()
         );
 
-        return new ReservationResponse(
-            savedReservation.getId(),
-            "Reservation created successfully and email confirmation sent.",
-            user.getEmail(),
-            event.getTitle(),
-            savedReservation.getQuantity()
-        );
+        return toReservationResponse(savedReservation, "Reservation created successfully and email confirmation sent.");
     }
 
-    public List<Event> getEventsForUser(Long userId) {
+    public List<ReservationResponse> getReservationsForUser(Long userId) {
+        findUser(userId);
+
         return reservationRepository.findByUser_Id(userId)
                 .stream()
-                .map(Reservation::getEvent)
+                .sorted(Comparator
+                        .comparing((Reservation reservation) -> reservation.getEvent().getEventDate(),
+                                Comparator.nullsLast(Comparator.naturalOrder()))
+                        .thenComparing(Reservation::getId, Comparator.nullsLast(Comparator.reverseOrder())))
+                .map(reservation -> toReservationResponse(reservation, null))
                 .toList();
+    }
+
+    public ReservationResponse cancelReservation(Long userId, Long reservationId) {
+        findUser(userId);
+
+        Reservation reservation = reservationRepository.findByIdAndUser_Id(reservationId, userId)
+                .orElseThrow(() -> new BadRequestException("Reservation not found for this user."));
+
+        ReservationResponse response = toReservationResponse(reservation, "Reservation canceled successfully.");
+        reservationRepository.delete(reservation);
+        return response;
+    }
+
+    private User findUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new BadRequestException("User not found with ID: " + userId));
+    }
+
+    private Event findEvent(Long eventId) {
+        return eventRepository.findById(eventId)
+                .orElseThrow(() -> new BadRequestException("Event not found with ID: " + eventId));
+    }
+
+    private ReservationResponse toReservationResponse(Reservation reservation, String message) {
+        Event event = reservation.getEvent();
+        User user = reservation.getUser();
+        return new ReservationResponse(
+                reservation.getId(),
+                message,
+                user.getEmail(),
+                event.getTitle(),
+                reservation.getQuantity(),
+                event.getEventId(),
+                event.getEventDate(),
+                event.getLocation(),
+                event.getStatus() == null || event.getStatus().trim().isEmpty()
+                        ? EventService.STATUS_ACTIVE
+                        : event.getStatus()
+        );
     }
 }

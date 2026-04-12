@@ -18,6 +18,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -47,6 +48,7 @@ class EventServiceTest {
         Event result = eventService.createEvent(event);
 
         assertEquals("Spring Meetup", result.getTitle());
+        assertEquals(EventService.STATUS_ACTIVE, event.getStatus());
         verify(eventRepository).save(event);
     }
 
@@ -113,7 +115,19 @@ class EventServiceTest {
 
         eventService.deleteEvent(5L);
 
+        verify(reservationRepository).deleteByEvent_EventId(5L);
         verify(eventRepository).deleteById(5L);
+    }
+
+    @Test
+    void shouldDeleteReservationsBeforeDeletingEvent() {
+        when(eventRepository.existsById(10L)).thenReturn(true);
+
+        eventService.deleteEvent(10L);
+
+        var inOrder = inOrder(reservationRepository, eventRepository);
+        inOrder.verify(reservationRepository).deleteByEvent_EventId(10L);
+        inOrder.verify(eventRepository).deleteById(10L);
     }
 
     @Test
@@ -129,12 +143,14 @@ class EventServiceTest {
         event1.setEventId(1L);
         Event event2 = validEvent();
         event2.setEventId(2L);
+        event2.setStatus(EventService.STATUS_CANCELLED);
 
         when(eventRepository.findAll()).thenReturn(java.util.List.of(event1, event2));
 
         java.util.List<Event> result = eventService.getAllEvents();
 
-        assertEquals(2, result.size());
+        assertEquals(1, result.size());
+        assertEquals(1L, result.get(0).getEventId());
         verify(eventRepository).findAll();
     }
 
@@ -200,6 +216,19 @@ class EventServiceTest {
         assertEquals("Updated Title", result.getTitle());
         assertEquals("Toronto", result.getLocation());
         assertEquals(200, result.getEventCapacity());
+        verify(eventRepository).save(existing);
+    }
+
+    @Test
+    void shouldCancelEventWhenFound() {
+        Event existing = validEvent();
+        existing.setEventId(10L);
+        when(eventRepository.findById(10L)).thenReturn(Optional.of(existing));
+        when(eventRepository.save(any(Event.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        Event result = eventService.cancelEvent(10L);
+
+        assertEquals(EventService.STATUS_CANCELLED, result.getStatus());
         verify(eventRepository).save(existing);
     }
 

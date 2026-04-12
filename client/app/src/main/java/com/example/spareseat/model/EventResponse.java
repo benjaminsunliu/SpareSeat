@@ -14,6 +14,7 @@ public class EventResponse implements Serializable {
     private int eventCapacity;
     private int remainingSpots;
     private String category;
+    private String status;
 
     public EventResponse() {
     }
@@ -21,6 +22,13 @@ public class EventResponse implements Serializable {
     public EventResponse(Long eventId, Long organizerId, String title, String description,
                          String date, String location, int eventCapacity, int remainingSpots,
                          String category) {
+        this(eventId, organizerId, title, description, date, location, eventCapacity, remainingSpots,
+                category, "ACTIVE");
+    }
+
+    public EventResponse(Long eventId, Long organizerId, String title, String description,
+                         String date, String location, int eventCapacity, int remainingSpots,
+                         String category, String status) {
         this.eventId = eventId;
         this.organizerId = organizerId;
         this.title = title;
@@ -30,6 +38,7 @@ public class EventResponse implements Serializable {
         this.eventCapacity = eventCapacity;
         this.remainingSpots = remainingSpots;
         this.category = category;
+        this.status = status;
     }
 
     public Long getEventId() { return eventId; }
@@ -41,4 +50,5 @@ public class EventResponse implements Serializable {
     public int getEventCapacity() { return eventCapacity; }
     public int getRemainingSpots() { return remainingSpots; }
     public String getCategory() { return category; }
+    public String getStatus() { return status; }
 }

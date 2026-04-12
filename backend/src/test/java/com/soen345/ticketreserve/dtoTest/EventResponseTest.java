@@ -21,6 +21,7 @@ public class EventResponseTest {
         eventResponse.setEventCapacity(100);
         eventResponse.setRemainingSpots(72);
         eventResponse.setCategory("Tech");
+        eventResponse.setStatus("ACTIVE");
 
         assertEquals(1L, eventResponse.getEventId());
         assertEquals("Spring Meetup", eventResponse.getTitle());
@@ -30,6 +31,7 @@ public class EventResponseTest {
         assertEquals(100, eventResponse.getEventCapacity());
         assertEquals(72, eventResponse.getRemainingSpots());
         assertEquals("Tech", eventResponse.getCategory());
+        assertEquals("ACTIVE", eventResponse.getStatus());
     }
 
     @Test
@@ -37,7 +39,7 @@ public class EventResponseTest {
         EventResponse r = new EventResponse(
                 5L, 10L, "Concert", "Live music",
                 LocalDate.of(2026, 6, 15),
-                "Toronto", 200, 165, "Music");
+                "Toronto", 200, 165, "Music", "ACTIVE");
 
         assertEquals(5L, r.getEventId());
         assertEquals(10L, r.getOrganizerId());
@@ -48,6 +50,7 @@ public class EventResponseTest {
         assertEquals(200, r.getEventCapacity());
         assertEquals(165, r.getRemainingSpots());
         assertEquals("Music", r.getCategory());
+        assertEquals("ACTIVE", r.getStatus());
     }
 
     @Test
@@ -78,7 +81,7 @@ public class EventResponseTest {
     @Test
     void testOrganizerIdCanBeNull() {
         EventResponse r = new EventResponse(1L, null, "Title", "Desc",
-                LocalDate.of(2026, 1, 1), "Montreal", 50, 50, "General");
+                LocalDate.of(2026, 1, 1), "Montreal", 50, 50, "General", "ACTIVE");
         assertNull(r.getOrganizerId());
     }
 }
