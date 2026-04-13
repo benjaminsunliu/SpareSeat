@@ -1,0 +1,17 @@
+appId: com.example.spareseat
+---
+- launchApp:
+    clearState: true
+- tapOn: "Get Started"
+- tapOn:
+    id: "tilEmail"
+- inputText: "wrong@email.com"
+- hideKeyboard
+- tapOn:
+    id: "tilPassword"
+- inputText: "wrongPass1"
+- hideKeyboard
+- tapOn: "Sign In"
+- extendedWaitUntil:
+    visible: "Invalid credentials"
+    timeout: 15000

@@ -1,0 +1,25 @@
+appId: com.example.spareseat
+---
+# "Festival" matches: Good Vibes Downtown, Fortnite juice world
+- launchApp:
+    clearState: true
+- tapOn: "Get Started"
+- tapOn:
+    id: "tilEmail"
+- inputText: "bigydot@gmail.com"
+- hideKeyboard
+- tapOn:
+    id: "tilPassword"
+- inputText: "123456aA"
+- hideKeyboard
+- tapOn: "Sign In"
+- extendedWaitUntil:
+    visible: "Hi, Big Dot!"
+    timeout: 15000
+- extendedWaitUntil:
+    visible: "View Details →"
+    timeout: 15000
+- tapOn:
+    id: "actvCategory"
+- tapOn: "Festival"
+- assertVisible: "Good Vibes Downtown"

@@ -1,0 +1,18 @@
+appId: com.example.spareseat
+---
+- launchApp:
+    clearState: true
+- tapOn: "Get Started"
+- tapOn: "Phone"
+- tapOn:
+    id: "tilEmail"
+- inputText: "4505140000"
+- hideKeyboard
+- tapOn:
+    id: "tilPassword"
+- inputText: "123456aA"
+- hideKeyboard
+- tapOn: "Sign In"
+- extendedWaitUntil:
+    visible: "Host Dashboard"
+    timeout: 15000

@@ -1,0 +1,59 @@
+appId: com.example.spareseat
+---
+- launchApp:
+    clearState: true
+- tapOn: "Get Started"
+- tapOn: "Phone"
+- tapOn:
+    id: "tilEmail"
+- inputText: "4505140000"
+- hideKeyboard
+- tapOn:
+    id: "tilPassword"
+- inputText: "123456aA"
+- hideKeyboard
+- tapOn: "Sign In"
+- extendedWaitUntil:
+    visible: "Host Dashboard"
+    timeout: 15000
+# Cleanup: remove leftover from any previous failed run before starting
+- runFlow:
+    when:
+      visible: "Event To Delete"
+    commands:
+      - tapOn:
+          text: "More options"
+          rightOf: "Event To Delete"
+      - tapOn: "Delete"
+      - tapOn: "Delete"
+- tapOn: "+ Create"
+- tapOn:
+    id: "etTitle"
+- inputText: "Event To Delete"
+- hideKeyboard
+- tapOn:
+    id: "etDate"
+- inputText: "2026-12-01"
+- hideKeyboard
+- tapOn:
+    id: "etLocation"
+- inputText: "Montreal"
+- hideKeyboard
+- tapOn:
+    id: "etCapacity"
+- inputText: "10"
+- hideKeyboard
+- tapOn: "Create"
+- extendedWaitUntil:
+    visible: "Event To Delete"
+    timeout: 15000
+- waitForAnimationToEnd
+- tapOn:
+    text: "More options"
+    rightOf: "Event To Delete"
+- tapOn: "Delete"
+- assertVisible: "Delete Event"
+- tapOn: "Delete"
+- extendedWaitUntil:
+    notVisible: "Event To Delete"
+    timeout: 15000

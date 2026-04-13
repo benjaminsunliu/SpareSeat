@@ -1,0 +1,27 @@
+appId: com.example.spareseat
+---
+- launchApp:
+    clearState: true
+- tapOn: "Get Started"
+- tapOn: "Sign Up"
+- waitForAnimationToEnd
+- tapOn:
+    id: "tilFullName"
+- inputText: "Test User"
+- hideKeyboard
+- tapOn:
+    id: "tilEmail"
+- inputText: "bigydot@gmail.com"
+- hideKeyboard
+- tapOn:
+    id: "tilPassword"
+- inputText: "Test1234A"
+- hideKeyboard
+- tapOn:
+    id: "tilConfirmPassword"
+- inputText: "Test1234A"
+- hideKeyboard
+- tapOn: "Create Account"
+- extendedWaitUntil:
+    visible: "Email is already registered"
+    timeout: 15000
