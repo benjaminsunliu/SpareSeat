@@ -3,6 +3,16 @@ The Ticket Reservation Application is a Java-based web system designed to simpli
 
 The system is designed to serve two main user groups: customers and event administrators. While customers can manage their reservations and receive confirmations via email, administrators are responsible for creating, updating, and canceling events. Built with scalability and usability in mind, the application supports concurrent users and provides a simple, user-friendly interface for an efficient booking experience.
 
+
+The following are the members who contributed in the development of the project:
+| Name | Student ID| 
+|-----------------|-----------------|
+| Benjamin Liu | 40280899 |
+| Jordan Yeh | 40283075 |
+| Gregory Sacciadis | 40207512 |
+| Hendrik Tebeng | 40282196 |
+| Akshey Visuvalingam | 40270505 |
+
 ## E2E Tests (Maestro)
 
 **Install Maestro:** https://docs.maestro.dev/get-started/quickstart
@@ -26,17 +36,10 @@ Clone the repository and follow the steps:
 - Maven (wrapper included)
 
 ### 2. Configuration
-The backend uses PostgreSQL (Supabase) and Gmail SMTP for mail services. **Do not edit `application.properties` directly.**
+The backend uses PostgreSQL (Supabase) and Gmail SMTP for mail services.
 
-Instead, copy the example environment file and fill in your credentials:
 
-```sh
-cd backend
-cp .env.example .env
-# On Windows, use: copy .env.example .env
-```
-
-Edit the new `.env` file to provide your database and mail credentials. Example:
+Create and edit a new `.env` file in the `backend` folder to provide your database and mail credentials. Example:
 
 ```
 SPRING_DATASOURCE_URL=jdbc:postgresql://your-host:5432/your-db?sslmode=require
