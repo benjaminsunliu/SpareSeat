@@ -209,6 +209,8 @@ class UserServiceTest {
 
         assertThrows(BadRequestException.class, () -> userService.getUserById(99L));
     }
+
+    @Test
     void shouldRegisterEmailAsLowercase() {
         UserRegistrationRequest request = new UserRegistrationRequest();
         request.setName("Benjamin");
@@ -245,8 +247,84 @@ class UserServiceTest {
         assertEquals("ben@test.com", result.getEmail());
         verify(userRepository).findByEmail("ben@test.com");
     }
+
+    @Test
+    void shouldRegisterHostRoleWhenExplicitlyRequested() {
+        UserRegistrationRequest request = new UserRegistrationRequest();
+        request.setName("Benjamin");
+        request.setEmail("host@test.com");
+        request.setPassword("password123");
+        request.setRole("HOST");
+
+        when(userRepository.existsByEmail("host@test.com")).thenReturn(false);
+        when(passwordEncoder.encode("password123")).thenReturn("hashed");
+        when(userRepository.save(any(User.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        User result = userService.registerUser(request);
+
+        assertEquals("HOST", result.getRole());
+    }
+
+    @Test
+    void shouldDefaultRoleToCustomerWhenRoleIsNotHost() {
+        UserRegistrationRequest request = new UserRegistrationRequest();
+        request.setName("Benjamin");
+        request.setEmail("customer@test.com");
+        request.setPassword("password123");
+        request.setRole("ADMIN");
+
+        when(userRepository.existsByEmail("customer@test.com")).thenReturn(false);
+        when(passwordEncoder.encode("password123")).thenReturn("hashed");
+        when(userRepository.save(any(User.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        User result = userService.registerUser(request);
+
+        assertEquals("CUSTOMER", result.getRole());
+    }
+
+    @Test
+    void shouldThrowErrorIfPhoneAlreadyExists() {
+        UserRegistrationRequest request = new UserRegistrationRequest();
+        request.setName("Benjamin");
+        request.setPhoneNumber("5141234567");
+        request.setPassword("password123");
+
+        when(userRepository.existsByPhoneNumber("5141234567")).thenReturn(true);
+
+        assertThrows(BadRequestException.class, () -> userService.registerUser(request));
+    }
+
+    @Test
+    void shouldThrowErrorIfNameIsBlank() {
+        UserRegistrationRequest request = new UserRegistrationRequest();
+        request.setName("   ");
+        request.setEmail("ben@test.com");
+        request.setPassword("password123");
+
+        assertThrows(BadRequestException.class, () -> userService.registerUser(request));
+    }
+
     @Test
     void shouldThrowWhenIdIsInvalid() {
         assertThrows(BadRequestException.class, () -> userService.getUserById(-1L));
+    }
+
+    @Test
+    void shouldThrowWhenIdIsNull() {
+        assertThrows(BadRequestException.class, () -> userService.getUserById(null));
+    }
+
+    @Test
+    void shouldReturnUserWhenIdExists() {
+        User user = new User();
+        user.setId(5L);
+        user.setName("Benjamin");
+
+        when(userRepository.findById(5L)).thenReturn(Optional.of(user));
+
+        User result = userService.getUserById(5L);
+
+        assertEquals(5L, result.getId());
+        assertEquals("Benjamin", result.getName());
     }
 }
