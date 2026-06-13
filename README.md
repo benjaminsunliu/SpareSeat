@@ -8,12 +8,10 @@ SpareSeat is an Android app backed by a Spring Boot REST API that lets users bro
 
 <table>
   <tr>
-    <td align="center"><img src="images/home.png" width="220"/><br/><sub>Splash Screen</sub></td>
-    <td align="center"><img src="images/browse.png" width="220"/><br/><sub>Browse Events</sub></td>
-  </tr>
-  <tr>
-    <td align="center"><img src="images/event.png" width="220"/><br/><sub>Event Details & Reserve</sub></td>
-    <td align="center"><img src="images/reservations.png" width="220"/><br/><sub>My Reservations</sub></td>
+    <td align="center"><img src="images/home.png" width="160"/><br/><sub>Splash Screen</sub></td>
+    <td align="center"><img src="images/browse.png" width="160"/><br/><sub>Browse Events</sub></td>
+    <td align="center"><img src="images/event.png" width="160"/><br/><sub>Event Details & Reserve</sub></td>
+    <td align="center"><img src="images/reservations.png" width="160"/><br/><sub>My Reservations</sub></td>
   </tr>
 </table>
 
